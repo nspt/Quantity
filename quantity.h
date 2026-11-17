@@ -10,15 +10,17 @@
 //
 //   #include "quantity.h"
 //   using namespace nspt;
-//   using namespace nspt::literals;
+//   using namespace nspt::literals;   // 1.0_m、50.0_mps、90.0_deg …
 //
-//   auto d = 100.0_m + 2.0_km;              // 2100 m
-//   Kilometer km = d;                       // 隐式换单位
-//   auto v = 100.0_m / 2s;                  // 50 m/s
-//   auto v_kph = v.as<KilometerPerHour>();  // 180 km/h
-//   auto dist = v * 3s;                     // 150 m
-//   auto dt = 150.0_m / v;                  // 3 s
-//   to_string(v);                           // "50.000000 m/s"
+//   auto d = 100.0_m + 2.0_km;              // 同 dimension 可加减，结果取左操作数单位
+//   Kilometer km = d;                       // 同 dimension 隐式换单位
+//   auto v = 100.0_m / 2s;                  // 长度|角度 ÷ chrono → 速度
+//   auto v_kph = v.as<KilometerPerHour>();  // 显式换到目标 Quantity 别名
+//   auto dist = v * 3s;                     // 速度 × 时间 → 位移
+//   auto dt = 150.0_m / v;                  // 位移 ÷ 速度 → duration
+//   to_string(v);                           // "50 m/s"
+//
+// 不同 dimension（如米与弧度、线速度与角速度）不能混算；时间用 std::chrono。
 // =============================================================================
 
 namespace nspt {
