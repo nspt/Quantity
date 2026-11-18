@@ -1,6 +1,10 @@
 # Quantity
 
-类型安全的物理量库，header-only，C++17。数值和单位绑在类型里，不同量纲不能混算；时间用 `std::chrono`，不另建时间单位。
+类型安全的物理量库，header-only，要求 C++17。把数值和单位绑在同一个类型里，让「米 + 弧度」这类错误在编译期就被拦住；同一量纲下可以自由换算和运算。
+
+时间一律用 `std::chrono::duration`，不自建时间单位；长度或角度除以时间得到速度，再乘回时间就还原成位移。日常写法靠字面量（`1.0_m`、`50.0_mps`）和别名（`Meter`、`KilometerPerHour`）即可。
+
+只需 `#include "quantity.h"`。
 
 ---
 
@@ -16,17 +20,17 @@ using namespace nspt::literals;
 using namespace std::chrono_literals;
 
 int main() {
-    auto dist = 100.0_m + 2.0_km;             // 2100 m
+    Meter dist = 100.0_m + 2.0_km;            // 2100 m
     Kilometer km = dist;                      // 隐式换单位
-    auto theta = 90.0_deg + 1.0_rad;
+    Degree theta = 90.0_deg + 1.0_rad;
 
-    auto v = 100.0_m / 2s;                    // 50 m/s
-    auto v_kph = v.as<KilometerPerHour>();    // 180 km/h
-    auto omega = 180.0_deg / 1s;
-    auto omega_rad = omega.as<RadianPerSecond>();
+    MeterPerSecond v = 100.0_m / 2s;          // 50 m/s
+    KilometerPerHour v_kph = v.as<KilometerPerHour>();  // 180 km/h
+    DegreePerSecond omega = 180.0_deg / 1s;
+    RadianPerSecond omega_rad = omega.as<RadianPerSecond>();
 
-    auto d2 = v * 3s;                         // 150 m
-    auto dt = 150.0_m / v;                    // 3 s
+    Meter d2 = v * 3s;                        // 150 m
+    std::chrono::duration<double> dt = 150.0_m / v;  // 3 s
 
     std::cout << to_string(v) << "  " << to_string(v_kph) << '\n';
 }
